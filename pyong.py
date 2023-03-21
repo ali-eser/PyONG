@@ -1,28 +1,33 @@
 import pygame
-from pygame import gfxdraw
+
 
 def ball_physics():
     global bsx, bsy
     ball.x += bsx
     ball.y += bsy
-    
+
     # Collision
     if ball.top <= 0 or ball.bottom >= screen.get_height():
         bsy *= -1
+        audio()
     if p1.colliderect(ball) or p2.colliderect(ball):
         bsx *= -1
+        audio()
+
 
 def player_controls():
-    global p1s, p2s
+    global p1sp, p2sp
+
     key = pygame.key.get_pressed()
     if key[pygame.K_w]:
-        p1.y -= p1s * dt
+        p1.y -= p1sp * dt
     if key[pygame.K_UP]:
-        p2.y -= p2s * dt
+        p2.y -= p2sp * dt
     if key[pygame.K_s]:
-        p1.y += p1s * dt
+        p1.y += p1sp * dt
     if key[pygame.K_DOWN]:
-        p2.y += p2s * dt
+        p2.y += p2sp * dt
+
     if p1.bottom >= screen.get_height():
         p1.bottom = screen.get_height()
     if p1.top <= 0:
@@ -34,26 +39,49 @@ def player_controls():
 
 
 def calc_score():
-    global p1score, p2score
+    global p1score, p2score, bsx, bsy
+
     if ball.left <= 0:
         p2score += 1
         ball.center = screen.get_width() / 2 - 10, screen.get_height() / 2 - 10
+        bsx *= -1
+        bsy *= -1
     if ball.right >= screen.get_width():
         p1score += 1
         ball.center = screen.get_width() / 2 - 10, screen.get_height() / 2 - 10
+        bsx *= -1
+        bsy *= -1
+
+    if p1score >= 5:
+        screen.fill(pygame.Color(41, 41, 51))
+        p1victory = font.render(f"Player 1 Won!", True, pygame.Color(120, 120, 150))
+        screen.blit(p1victory, p1victory.get_rect(center = screen.get_rect().center))
+        pygame.mixer.pause()
+    elif p2score >= 5:
+        screen.fill(pygame.Color(41, 41, 51))
+        p2victory = font.render(f"Player 2 Won!", True, pygame.Color(120, 120, 150))
+        screen.blit(p2victory, p2victory.get_rect(center = screen.get_rect().center))
+        pygame.mixer.pause()
 
 
+def audio():
+    ball_hit = pygame.mixer.Sound("./audio/ball_hit.wav")
+    ball_hit.play()
 
+
+pygame.mixer.pre_init(44100, -16, 2)
 pygame.init()
+pygame.mixer.init()
 pygame.display.set_caption('PyONG')
-screen = pygame.display.set_mode((1600, 900))
+screen = pygame.display.set_mode((1280, 720), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.SCALED, vsync=1)
 clock = pygame.time.Clock()
 p1 = pygame.Rect(screen.get_width() - (screen.get_width() / 1.01), screen.get_height() / 2, 7, screen.get_height() / 5.2)
 p2 = pygame.Rect(screen.get_width() / 1.01 - 7, screen.get_height() / 2, 7, screen.get_height() / 5.2)
 ball = pygame.Rect(screen.get_width() / 2 - 10, screen.get_height() / 2 - 10, 20, 20)
-font = pygame.font.SysFont(None, 72)
+font = pygame.font.SysFont(None, 250)
 p1score, p2score = 0, 0
-bsx, bsy, p1s, p2s = 8, 8, 550, 550
+bsx, bsy, p1sp, p2sp = 11, 11, 630, 630
+starter = 0
 
 # Gameplay loop
 running = True
@@ -64,30 +92,36 @@ while running:
 
     # Draw gameplay elements
     screen.fill(pygame.Color(41, 41, 51))
-    p1score_text = font.render(f"{p1score}", True, pygame.Color(150, 150, 200))
-    p2score_text = font.render(f"{p2score}", True, pygame.Color(150, 150, 200))
-    screen.blit(p1score_text, ((screen.get_width() / 2) - 120, 20))
-    screen.blit(p2score_text, ((screen.get_width() / 2) + 60, 20))
-    pygame.draw.rect(screen, "whitesmoke", p1, border_radius=5)
-    pygame.draw.rect(screen, "whitesmoke", p2, border_radius=5)
-    pygame.draw.line(screen, pygame.Color(61, 61, 75), (screen.get_width() / 2 , 0), 
-                    (screen.get_width() / 2, screen.get_height()), 3)
-    pygame.draw.ellipse(screen, "red", ball)
+    if starter == 0:
+        splash_title = font.render("PyONG!", True, pygame.Color(120, 120, 150))
+        screen.blit(splash_title, splash_title.get_rect(center = screen.get_rect().center))
 
-    # Add ball collision
-    ball_physics()
+    if pygame.key.get_pressed()[pygame.K_SPACE]:
+        starter += 1
 
-    # Calculate score 
-    calc_score()
-    
-    # Add controls
-    player_controls()
+    if starter > 0:
+        score_text = font.render(f"{p1score}            {p2score}", True, pygame.Color(120, 120, 150))
+        screen.blit(score_text, score_text.get_rect(center = screen.get_rect().center))
+        pygame.draw.rect(screen, "whitesmoke", p1, border_radius=5)
+        pygame.draw.rect(screen, "whitesmoke", p2, border_radius=5)
+        pygame.draw.line(screen, pygame.Color(61, 61, 75), (screen.get_width() / 2 , 0), 
+                        (screen.get_width() / 2, screen.get_height()), 3)
+        pygame.draw.ellipse(screen, "red", ball)
+
+        # Add ball collision
+        ball_physics()
+
+        # Add controls
+        player_controls()
+
+        # Calculate score 
+        calc_score()
 
     # Render
     pygame.display.flip()
 
     # Set framerate
-    clock.tick(77)
+    clock.tick(240)
 
     # Run physics independent of framerate
     dt = clock.tick(77) / 1000
