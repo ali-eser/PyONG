@@ -1,8 +1,9 @@
-import pygame
+import pygame, random
 
 
 def ball_physics():
     global bsx, bsy
+    
     ball.x += bsx
     ball.y += bsy
 
@@ -17,7 +18,6 @@ def ball_physics():
 
 def player_controls():
     global p1sp, p2sp
-
 
     if pygame.key.get_pressed()[pygame.K_w]:
         p1.y -= p1sp * dt
@@ -46,13 +46,13 @@ def calc_score():
         ball.center = screen.get_width() / 2 - 10, screen.get_height() / 2 - 10
         bsx *= -1
         bsy *= -1
-        pygame.time.wait(200)
+        pygame.time.wait(150)
     if ball.right >= screen.get_width():
         p1score += 1
         ball.center = screen.get_width() / 2 - 10, screen.get_height() / 2 - 10
         bsx *= -1
         bsy *= -1
-        pygame.time.wait(200)
+        pygame.time.wait(150)
 
 
 def winner_screen():
@@ -90,7 +90,9 @@ def audio():
 pygame.mixer.pre_init(44100, -16, 2)
 pygame.init()
 pygame.mixer.init()
-pygame.display.set_caption('PyONG')
+pygame.display.set_caption("PyONG")
+icon = pygame.image.load("./icon/pyong_icon.png")
+pygame.display.set_icon(icon)
 screen = pygame.display.set_mode((1280, 720), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.SCALED, vsync=1)
 clock = pygame.time.Clock()
 p1 = pygame.Rect(screen.get_width() - (screen.get_width() / 1.01), screen.get_height() / 2, 7, screen.get_height() / 5.2)
@@ -99,7 +101,9 @@ ball = pygame.Rect(screen.get_width() / 2 - 10, screen.get_height() / 2 - 10, 20
 splash_font = pygame.font.SysFont(None, 250)
 text_font = pygame.font.SysFont(None, 70)
 p1score, p2score = 0, 0
-bsx, bsy, p1sp, p2sp = 11, 11, 630, 630
+bsx = random.choice((-11, 11))
+bsy = random.choice((-11, 11))
+p1sp, p2sp = 630, 630
 starter = 1
 
 # Gameplay loop
