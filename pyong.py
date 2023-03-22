@@ -18,14 +18,14 @@ def ball_physics():
 def player_controls():
     global p1sp, p2sp
 
-    key = pygame.key.get_pressed()
-    if key[pygame.K_w]:
+
+    if pygame.key.get_pressed()[pygame.K_w]:
         p1.y -= p1sp * dt
-    if key[pygame.K_UP]:
+    if pygame.key.get_pressed()[pygame.K_UP]:
         p2.y -= p2sp * dt
-    if key[pygame.K_s]:
+    if pygame.key.get_pressed()[pygame.K_s]:
         p1.y += p1sp * dt
-    if key[pygame.K_DOWN]:
+    if pygame.key.get_pressed()[pygame.K_DOWN]:
         p2.y += p2sp * dt
 
     if p1.bottom >= screen.get_height():
@@ -39,29 +39,47 @@ def player_controls():
 
 
 def calc_score():
-    global p1score, p2score, bsx, bsy
+    global p1score, p2score, bsx, bsy, starter
 
     if ball.left <= 0:
         p2score += 1
         ball.center = screen.get_width() / 2 - 10, screen.get_height() / 2 - 10
         bsx *= -1
         bsy *= -1
+        pygame.time.wait(200)
     if ball.right >= screen.get_width():
         p1score += 1
         ball.center = screen.get_width() / 2 - 10, screen.get_height() / 2 - 10
         bsx *= -1
         bsy *= -1
+        pygame.time.wait(200)
 
-    if p1score >= 5:
+
+def winner_screen():
+    global starter, p1score, p2score
+
+    if p1score >= 10:
         screen.fill(pygame.Color(41, 41, 51))
-        p1victory = font.render(f"Player 1 Won!", True, pygame.Color(120, 120, 150))
+        p1victory = splash_font.render(f"Player 1 Won!", True, pygame.Color(120, 120, 150))
+        play_again = text_font.render(f"Press SPACE to play again", True, pygame.Color(120, 120, 150))
         screen.blit(p1victory, p1victory.get_rect(center = screen.get_rect().center))
-        pygame.mixer.pause()
-    elif p2score >= 5:
+        screen.blit(play_again, play_again.get_rect(midbottom = screen.get_rect().midbottom))
+        starter = 0
+        if pygame.key.get_pressed()[pygame.K_SPACE]:
+            starter += 1
+            p1score = 0
+            p2score = 0
+    elif p2score >= 10:
         screen.fill(pygame.Color(41, 41, 51))
-        p2victory = font.render(f"Player 2 Won!", True, pygame.Color(120, 120, 150))
+        p2victory = splash_font.render(f"Player 2 Won!", True, pygame.Color(120, 120, 150))
+        play_again = text_font.render(f"Press SPACE to play again", True, pygame.Color(120, 120, 150))
         screen.blit(p2victory, p2victory.get_rect(center = screen.get_rect().center))
-        pygame.mixer.pause()
+        screen.blit(play_again, play_again.get_rect(midbottom = screen.get_rect().midbottom))
+        starter = 0
+        if pygame.key.get_pressed()[pygame.K_SPACE]:
+            starter += 1
+            p1score = 0
+            p2score = 0
 
 
 def audio():
@@ -78,10 +96,11 @@ clock = pygame.time.Clock()
 p1 = pygame.Rect(screen.get_width() - (screen.get_width() / 1.01), screen.get_height() / 2, 7, screen.get_height() / 5.2)
 p2 = pygame.Rect(screen.get_width() / 1.01 - 7, screen.get_height() / 2, 7, screen.get_height() / 5.2)
 ball = pygame.Rect(screen.get_width() / 2 - 10, screen.get_height() / 2 - 10, 20, 20)
-font = pygame.font.SysFont(None, 250)
+splash_font = pygame.font.SysFont(None, 250)
+text_font = pygame.font.SysFont(None, 70)
 p1score, p2score = 0, 0
 bsx, bsy, p1sp, p2sp = 11, 11, 630, 630
-starter = 0
+starter = 1
 
 # Gameplay loop
 running = True
@@ -92,21 +111,26 @@ while running:
 
     # Draw gameplay elements
     screen.fill(pygame.Color(41, 41, 51))
-    if starter == 0:
-        splash_title = font.render("PyONG!", True, pygame.Color(120, 120, 150))
-        screen.blit(splash_title, splash_title.get_rect(center = screen.get_rect().center))
 
+    # Start the game
     if pygame.key.get_pressed()[pygame.K_SPACE]:
         starter += 1
 
-    if starter > 0:
-        score_text = font.render(f"{p1score}            {p2score}", True, pygame.Color(120, 120, 150))
+    # Splash screen
+    if starter == 1:
+        splash_title = splash_font.render("PyONG!", True, pygame.Color(120, 120, 150))
+        start_title = text_font.render("Press SPACE to start", True, pygame.Color(120, 120, 150))
+        screen.blit(splash_title, splash_title.get_rect(center = screen.get_rect().center))
+        screen.blit(start_title, start_title.get_rect(midbottom = screen.get_rect().midbottom))
+
+    if starter > 1:
+        score_text = splash_font.render(f"{p1score}            {p2score}", True, pygame.Color(120, 120, 150))
         screen.blit(score_text, score_text.get_rect(center = screen.get_rect().center))
         pygame.draw.rect(screen, "whitesmoke", p1, border_radius=5)
         pygame.draw.rect(screen, "whitesmoke", p2, border_radius=5)
         pygame.draw.line(screen, pygame.Color(61, 61, 75), (screen.get_width() / 2 , 0), 
                         (screen.get_width() / 2, screen.get_height()), 3)
-        pygame.draw.ellipse(screen, "red", ball)
+        pygame.draw.ellipse(screen, "orangered", ball)
 
         # Add ball collision
         ball_physics()
@@ -114,8 +138,11 @@ while running:
         # Add controls
         player_controls()
 
-        # Calculate score 
+        # Calculate score
         calc_score()
+
+    # Render winner screen if a player scores 10
+    winner_screen()
 
     # Render
     pygame.display.flip()
@@ -124,6 +151,6 @@ while running:
     clock.tick(240)
 
     # Run physics independent of framerate
-    dt = clock.tick(77) / 1000
+    dt = clock.tick(80) / 1000
 
 pygame.quit()
