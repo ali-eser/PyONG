@@ -83,7 +83,7 @@ def winner_screen():
 
 
 def audio():
-    ball_hit = pygame.mixer.Sound("./audio/ball_hit.wav")
+    ball_hit = pygame.mixer.Sound("ball_hit.wav")
     ball_hit.play()
 
 
@@ -91,7 +91,7 @@ pygame.mixer.pre_init(44100, -16, 2)
 pygame.init()
 pygame.mixer.init()
 pygame.display.set_caption("PyONG")
-icon = pygame.image.load("./icon/pyong_icon.png")
+icon = pygame.image.load("pyong_icon.png")
 pygame.display.set_icon(icon)
 screen = pygame.display.set_mode((1280, 720), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.SCALED, vsync=1)
 clock = pygame.time.Clock()
