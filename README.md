@@ -1,8 +1,6 @@
-# PyONG
+# PyONG / Harvard CS50x Final Project
 #### Video Demo:  <https://youtu.be/lYvpLr0jfc0>
 #### Description:
-Harvard CS50x Final Project
-
 PyONG is a remake and a reimplementation of the classic PONG in Python 3.11 using pygame 2.3.0 libraries.
 
 PyONG is a two player game, where left paddle is controlled by "W" and "S" for up and down movement, respectively, while right paddle is controlled by "UP ARROW" and "DOWN ARROW". When opened, the game greets players with a splash screen constituted by the text "PyONG!" and below that a smaller text that prompts the player to start the game by pressing "SPACE". The board is colored greyish blue, accompanied with a orangered ball. The board also houses scores for Player 1 (left) and Player 2 (right). Every text in the game uses default SysFont (in the video it is Segoe UI, as I use Windows).
