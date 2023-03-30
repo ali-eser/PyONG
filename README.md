@@ -11,4 +11,4 @@ Whenever a ball touches one side of the screen, the player on the other side of 
 
 There is a sound played whenever a collision is detected. I recorded a key press sound of my mechanical keyboard with iPhone, and denoised the sound file using Audacity. I also created a title bar icon for the game in MS Paint and added transparency to it with GIMP.
 
-The reason I used Python and pygame is that I found Python to be quite light on syntax and easier to build somewhat more complex programs like games from the get go compared to C throughout CS50x. I opted to import pygame as it offers a fairly complete game development environment especially for someone like me who was about to develop his first game. I see PyONG as my introduction to game development and it teached me many different use cases of lists, dicts, tuples, functions and so on.
+The reason I used Python and pygame is that I found Python to be quite light on syntax and easier to build somewhat more complex programs like games from the get go compared to C throughout CS50x.
