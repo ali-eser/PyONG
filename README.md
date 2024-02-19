@@ -1,4 +1,4 @@
-# PyONG / Harvard CS50x Final Project
+# PyONG
 #### Video Demo:  <https://youtu.be/lYvpLr0jfc0>
 #### Description:
 PyONG is a remake and a reimplementation of the classic PONG in Python 3.11 using pygame 2.3.0 libraries.
